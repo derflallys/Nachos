@@ -16,6 +16,9 @@
 #include "stats.h"
 #include "timer.h"
 
+#ifdef CHANGED
+unsigned int MAX_STRING_SIZE = 10;
+#endif // CHANGED
 
 
 // Initialization and cleanup routines

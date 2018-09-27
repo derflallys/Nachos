@@ -65,7 +65,7 @@ UpdatePC ()
 //----------------------------------------------------------------------
 #ifdef CHANGED
 int copyStringFromMachine(int from, char*to, unsigned size){
-  
+
   return 0;
 }
 #endif // CHANGED
@@ -106,7 +106,7 @@ ExceptionHandler (ExceptionType which)
         case SC_PutString:
         {
           DEBUG ('s', "PutString\n");
-          int r = machine->ReadRegister (4);
+          int r = copyStringFromMachine(machine->ReadRegister (4), NULL, MAX_STRING_SIZE)
           synchconsole->SynchPutString(r);
           break;
         }
