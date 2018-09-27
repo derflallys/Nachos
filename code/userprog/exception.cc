@@ -63,6 +63,13 @@ UpdatePC ()
 //      "which" is the kind of exception.  The list of possible exceptions
 //      are in machine.h.
 //----------------------------------------------------------------------
+#ifdef CHANGED
+int copyStringFromMachine(int from, char*to, unsigned size){
+  
+  return 0;
+}
+#endif // CHANGED
+
 
 void
 ExceptionHandler (ExceptionType which)
@@ -94,6 +101,13 @@ ExceptionHandler (ExceptionType which)
           DEBUG ('s', "PutChar\n");
           int r = machine->ReadRegister (4);
           synchconsole->SynchPutChar(r);
+          break;
+        }
+        case SC_PutString:
+        {
+          DEBUG ('s', "PutString\n");
+          int r = machine->ReadRegister (4);
+          synchconsole->SynchPutString(r);
           break;
         }
         #endif // CHANGED

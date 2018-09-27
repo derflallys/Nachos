@@ -34,6 +34,8 @@
 
 #ifdef CHANGED
 #define SC_PutChar	11
+#define SC_PutString	12
+
 #endif // CHANGED
 
 #ifdef IN_USER_MODE
