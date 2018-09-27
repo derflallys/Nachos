@@ -31,7 +31,9 @@ int SynchConsole::SynchGetChar()
 }
 void SynchConsole::SynchPutString(const char s[])
 {
-  // ...
+  for(int i = 0; i<(sizeof(s)/sizeof(char)); i++) {
+    SynchPutChar(s[i]);
+  }
 }
 void SynchConsole::SynchGetString(char *s, int n)
 {

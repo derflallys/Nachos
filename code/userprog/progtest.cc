@@ -13,7 +13,11 @@
 #include "console.h"
 #include "addrspace.h"
 #include "synch.h"
+
+#ifdef CHANGED
 #include "synchconsole.h"
+#endif // CHANGED
+
 
 //----------------------------------------------------------------------
 // StartProcess
@@ -114,21 +118,21 @@ ConsoleTest (const char *in, const char *out)
   delete readAvail;
   delete writeDone;
 }
+
 #ifdef CHANGED
 void SynchConsoleTest (const char *in, const char *out)
 {
-  SynchConsole *sync = new SynchConsole(in,out);
-  char ch ;
-  for(;;)
-  {
-    ch = sync->SynchGetChar();
-
-    sync->SynchPutChar(ch);
-
-    if (ch == 'q') {
-      printf ("Au revoir!\n");
-      break;		// if q, quit
+  char ch;
+  SynchConsole *test_synchconsole = new SynchConsole(in,out);
+  while ((ch = test_synchconsole->SynchGetChar()) != EOF) {
+    if (ch != '\n') {
+      test_synchconsole->SynchPutChar('<');
+      test_synchconsole->SynchPutChar(ch);
+      test_synchconsole->SynchPutChar('>');
+    } else {
+      test_synchconsole->SynchPutChar(ch);
     }
   }
+  fprintf(stderr, "EOF detected in SynchConsole!\n");
 }
 #endif // CHANGED

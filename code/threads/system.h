@@ -1,8 +1,8 @@
-// system.h 
+// system.h
 //      All global variables used in Nachos are defined here.
 //
 // Copyright (c) 1992-1993 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
 #ifndef SYSTEM_H
@@ -15,6 +15,8 @@
 #include "interrupt.h"
 #include "stats.h"
 #include "timer.h"
+
+
 
 // Initialization and cleanup routines
 extern void Initialize (int argc, char **argv);	// Initialization,
@@ -30,6 +32,11 @@ extern Statistics *stats;	// performance metrics
 extern Timer *timer;		// the hardware alarm clock
 
 #ifdef USER_PROGRAM
+#ifdef CHANGED
+#include "synchconsole.h"
+extern SynchConsole *synchconsole;	// user program memory and registers
+
+#endif // CHANGED
 #include "machine.h"
 extern Machine *machine;	// user program memory and registers
 #endif
