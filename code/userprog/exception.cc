@@ -67,8 +67,10 @@ UpdatePC ()
 int copyStringFromMachine(int from, char*to, unsigned size){
   int tmp;
   int i = 0;
-  while(i<size && to[i] != '\0' ) {
+  while(i<size) {
     machine->ReadMem(from+i, 1, &tmp);
+    if((char)tmp == '\0')
+      break;
     to[i] = (char)tmp;
     i++;
   }
@@ -122,6 +124,7 @@ ExceptionHandler (ExceptionType which)
             synchconsole->SynchPutString(to);
             from += r;
           }
+          free(to);
           break;
         }
         #endif // CHANGED

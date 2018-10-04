@@ -10,10 +10,10 @@ void print(char* c)
 int
 main()
 {
-  //print("abcdefgh");
-
+  print("abcdefgh");
+  print("\n");
   print("abcdefghijklmnopqrstuvwxyz");
-  //print("\n");
+  print("\n");
   Halt();
 }
 
