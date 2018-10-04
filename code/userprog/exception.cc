@@ -65,8 +65,15 @@ UpdatePC ()
 //----------------------------------------------------------------------
 #ifdef CHANGED
 int copyStringFromMachine(int from, char*to, unsigned size){
-
-  return 0;
+  int tmp;
+  int i = 0;
+  while(i<size && to[i] != '\0' ) {
+    machine->ReadMem(from+i, 1, &tmp);
+    to[i] = (char)tmp;
+    i++;
+  }
+  to[i]='\0';
+  return i;
 }
 #endif // CHANGED
 
@@ -106,8 +113,15 @@ ExceptionHandler (ExceptionType which)
         case SC_PutString:
         {
           DEBUG ('s', "PutString\n");
-          int r = copyStringFromMachine(machine->ReadRegister (4), NULL, MAX_STRING_SIZE)
-          synchconsole->SynchPutString(r);
+          char* to = (char*)malloc(sizeof(char)*MAX_STRING_SIZE);
+          int from = machine->ReadRegister (4);
+          int r = MAX_STRING_SIZE;
+          while(r == MAX_STRING_SIZE)
+          {
+            r = copyStringFromMachine(from,to, MAX_STRING_SIZE);
+            synchconsole->SynchPutString(to);
+            from += r;
+          }
           break;
         }
         #endif // CHANGED

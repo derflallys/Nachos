@@ -16,9 +16,7 @@
 #include "stats.h"
 #include "timer.h"
 
-#ifdef CHANGED
-unsigned int MAX_STRING_SIZE = 10;
-#endif // CHANGED
+
 
 
 // Initialization and cleanup routines
@@ -38,8 +36,9 @@ extern Timer *timer;		// the hardware alarm clock
 #ifdef CHANGED
 #include "synchconsole.h"
 extern SynchConsole *synchconsole;	// user program memory and registers
-
+const unsigned int MAX_STRING_SIZE = 10;
 #endif // CHANGED
+
 #include "machine.h"
 extern Machine *machine;	// user program memory and registers
 #endif
