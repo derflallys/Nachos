@@ -33,8 +33,11 @@
 #define SC_Yield	10
 
 #ifdef CHANGED
+
 #define SC_PutChar	11
 #define SC_PutString	12
+#define SC_GetChar	13
+#define SC_GetString	14
 
 #endif // CHANGED
 
@@ -136,9 +139,27 @@ void Fork (void (*func) ());
 */
 void Yield ();
 #ifdef CHANGED
+
+/*
+* Write character to output system
+*/
 void PutChar(char c);
 
+/*
+* Write String to output system
+*/
 void PutString(char* c);
+
+/*
+* Read character from input system
+*/
+int GetChar();
+
+/*
+* Read String from input system
+*/
+void GetString();
+
 #endif // CHANGED
 #endif // IN_USER_MODE
 

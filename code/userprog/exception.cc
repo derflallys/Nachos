@@ -70,12 +70,16 @@ int copyStringFromMachine(int from, char*to, unsigned size){
   while(i<size) {
     machine->ReadMem(from+i, 1, &tmp);
     if((char)tmp == '\0')
-      break;
+    break;
     to[i] = (char)tmp;
     i++;
   }
   to[i]='\0';
   return i;
+}
+
+int copyStringToMachine(int from, char*to, unsigned size){
+  return 0;
 }
 #endif // CHANGED
 
@@ -97,14 +101,15 @@ ExceptionHandler (ExceptionType which)
           interrupt->Halt ();
           break;
         }
+        #ifdef CHANGED
         case SC_Exit:
         {
+          DEBUG ('s', "Exit\n");
           int r = machine->ReadRegister (4);
           printf("Je teste Exit value return  %d \n",r );
           interrupt->Halt ();
           break;
         }
-        #ifdef CHANGED
         case SC_PutChar:
         {
           DEBUG ('s', "PutChar\n");
@@ -125,6 +130,18 @@ ExceptionHandler (ExceptionType which)
             from += r;
           }
           free(to);
+          break;
+        }
+        case SC_GetChar:
+        {
+          DEBUG ('s', "GetChar\n");
+          int ch = synchconsole->SynchGetChar();
+          machine->WriteRegister (2, ch);
+          break;
+        }
+        case SC_GetString:
+        {
+          DEBUG ('s', "GetString\n");
           break;
         }
         #endif // CHANGED
