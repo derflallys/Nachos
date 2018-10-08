@@ -66,7 +66,7 @@ UpdatePC ()
 #ifdef CHANGED
 int copyStringFromMachine(int from, char* to, unsigned size){
   int tmp;
-  int i = 0;
+  unsigned i = 0;
   while(i<size) {
     machine->ReadMem(from+i, 1, &tmp);
     if((char)tmp == '\0')
@@ -79,15 +79,19 @@ int copyStringFromMachine(int from, char* to, unsigned size){
 }
 
 int copyStringToMachine(int to, char* from, unsigned size) {
-  int i = 0;
+  unsigned i = 0;
   int tmp;
   while (i < size) {
+    printf("From Ch : %c \n",from[i] );
+
     if(from[i] == '\0' || from[i] == '\n') {
       tmp = (int)'\0';
       machine->WriteMem(to,1,tmp);
       break;
     }
     tmp = (int)from[i];
+    //printf("tmp Ch : %c \n",(char)tmp );
+
     machine->WriteMem(to,1,tmp);
     i++;
   }
@@ -154,6 +158,25 @@ ExceptionHandler (ExceptionType which)
         case SC_GetString:
         {
           DEBUG ('s', "GetString\n");
+          int to = machine->ReadRegister (4);
+          unsigned size = machine->ReadRegister (5);
+          char* string;
+
+          if(size < MAX_STRING_SIZE) {
+            string = (char*)malloc(sizeof(char)*size);
+            synchconsole->SynchGetString(string, size);
+            copyStringToMachine(to, string, size);
+          } else {
+            string = (char*)malloc(sizeof(char)*MAX_STRING_SIZE);
+            unsigned i = MAX_STRING_SIZE;
+            int cpt = MAX_STRING_SIZE;
+            while(i == MAX_STRING_SIZE) {
+              synchconsole->SynchGetString(string, size+cpt);
+              i = copyStringToMachine(to+i, string, size+cpt);
+              cpt += i;
+            }
+          }
+          free(string);
           break;
         }
         #endif // CHANGED

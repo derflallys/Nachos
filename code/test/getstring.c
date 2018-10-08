@@ -3,8 +3,7 @@
 int
 main()
 {
-  char s[10];
-  GetString(s, 10);
-  PutString(s);
-  return 0;
+  char s[5];
+  GetString(s,5 );
+  return 10;
 }
