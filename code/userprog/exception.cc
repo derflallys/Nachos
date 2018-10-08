@@ -64,7 +64,7 @@ UpdatePC ()
 //      are in machine.h.
 //----------------------------------------------------------------------
 #ifdef CHANGED
-int copyStringFromMachine(int from, char*to, unsigned size){
+int copyStringFromMachine(int from, char* to, unsigned size){
   int tmp;
   int i = 0;
   while(i<size) {
@@ -78,8 +78,20 @@ int copyStringFromMachine(int from, char*to, unsigned size){
   return i;
 }
 
-int copyStringToMachine(int from, char*to, unsigned size){
-  return 0;
+int copyStringToMachine(int to, char* from, unsigned size) {
+  int i = 0;
+  int tmp;
+  while (i < size) {
+    if(from[i] == '\0' || from[i] == '\n') {
+      tmp = (int)'\0';
+      machine->WriteMem(to,1,tmp);
+      break;
+    }
+    tmp = (int)from[i];
+    machine->WriteMem(to,1,tmp);
+    i++;
+  }
+  return i;
 }
 #endif // CHANGED
 
