@@ -49,4 +49,10 @@ void SynchConsole::SynchGetString(char *s, int n)
     i++;
   }
 }
+void SynchConsole::SynchPutInt(int var)
+{
+  char buf [100];
+  snprintf(buf,100,"%d \n",var);
+  SynchPutString(buf);
+}
 #endif // CHANGED

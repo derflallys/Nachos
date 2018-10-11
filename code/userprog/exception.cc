@@ -179,6 +179,13 @@ ExceptionHandler (ExceptionType which)
           free(string);
           break;
         }
+        case SC_PutInt:
+        {
+          DEBUG ('s', "PutInt\n");
+          int var  = machine->ReadRegister(4);
+          synchconsole->SynchPutInt(var);
+          break;
+        }
         #endif // CHANGED
 
         default:

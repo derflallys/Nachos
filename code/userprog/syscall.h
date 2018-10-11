@@ -38,6 +38,7 @@
 #define SC_PutString	12
 #define SC_GetChar	13
 #define SC_GetString	14
+#define SC_PutInt 15
 
 #endif // CHANGED
 
@@ -159,6 +160,13 @@ int GetChar();
 * Read String from input system
 */
 void GetString();
+
+/*
+* Write int from input system
+*/
+void PutInt(int n);
+
+
 
 #endif // CHANGED
 #endif // IN_USER_MODE
