@@ -39,6 +39,7 @@
 #define SC_GetChar	13
 #define SC_GetString	14
 #define SC_PutInt 15
+#define SC_GetInt 16
 
 #endif // CHANGED
 
@@ -159,13 +160,17 @@ int GetChar();
 /*
 * Read String from input system
 */
-void GetString();
+void GetString(char *s, int n);
 
 /*
-* Write int from input system
+* Write integer from input system
 */
 void PutInt(int n);
 
+/*
+* Read intger from input system
+*/
+int GetInt(int *n);
 
 
 #endif // CHANGED

@@ -13,7 +13,8 @@ public:
   int SynchGetChar();                 // Unix getchar(3S)
   void SynchPutString(const char *s); // Unix fputs(3S)
   void SynchGetString(char *s, int n);       // Unix fgets(3S)
-  void SynchPutInt(int var) ;
+  void SynchPutInt(int var);
+  int SynchGetInt(int *var);
 private:
   Console *console;
 };

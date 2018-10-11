@@ -98,6 +98,14 @@ GetChar:
   j	$31
   .end GetChar
 
+    .globl GetInt
+    .ent	GetInt
+  GetInt:
+   addiu $2,$0,SC_GetInt
+   syscall
+  j	$31
+  .end GetInt
+
   .globl GetString
 	.ent	GetString
 GetString:

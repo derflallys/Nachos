@@ -82,17 +82,15 @@ int copyStringToMachine(int to, char* from, unsigned size) {
   unsigned i = 0;
   int tmp;
   while (i < size) {
-    printf("From Ch : %c \n",from[i] );
+    //printf("From Ch : %c \n",from[i] );
 
     if(from[i] == '\0' || from[i] == '\n') {
       tmp = (int)'\0';
-      machine->WriteMem(to,1,tmp);
+      machine->WriteMem(to+i,1,tmp);
       break;
     }
     tmp = (int)from[i];
-    //printf("tmp Ch : %c \n",(char)tmp );
-
-    machine->WriteMem(to,1,tmp);
+    machine->WriteMem(to+i,1,tmp);
     i++;
   }
   return i;
@@ -122,7 +120,7 @@ ExceptionHandler (ExceptionType which)
         {
           DEBUG ('s', "Exit\n");
           int r = machine->ReadRegister (4);
-          printf("Je teste Exit value return  %d \n",r );
+          printf("\nExit value return  %d \n",r );
           interrupt->Halt ();
           break;
         }
@@ -164,18 +162,22 @@ ExceptionHandler (ExceptionType which)
 
           if(size < MAX_STRING_SIZE) {
             string = (char*)malloc(sizeof(char)*size);
-            synchconsole->SynchGetString(string, size);
-            copyStringToMachine(to, string, size);
           } else {
             string = (char*)malloc(sizeof(char)*MAX_STRING_SIZE);
-            unsigned i = MAX_STRING_SIZE;
-            int cpt = MAX_STRING_SIZE;
-            while(i == MAX_STRING_SIZE) {
-              synchconsole->SynchGetString(string, size+cpt);
-              i = copyStringToMachine(to+i, string, size+cpt);
-              cpt += i;
-            }
           }
+          unsigned i = 0;
+          int bufferSize;
+          do {
+            if(size < MAX_STRING_SIZE){
+              bufferSize = size;
+            }
+            else {
+              bufferSize = MAX_STRING_SIZE;
+            }
+            synchconsole->SynchGetString(string, bufferSize);
+            i = copyStringToMachine(to+i, string, bufferSize);
+            size -= i;
+          } while(i == MAX_STRING_SIZE);
           free(string);
           break;
         }
@@ -184,6 +186,14 @@ ExceptionHandler (ExceptionType which)
           DEBUG ('s', "PutInt\n");
           int var  = machine->ReadRegister(4);
           synchconsole->SynchPutInt(var);
+          break;
+        }
+        case SC_GetInt:
+        {
+          DEBUG ('s', "GetInt\n");
+          int var  = machine->ReadRegister(4);
+          int valueReturn = synchconsole->SynchGetInt(&var);
+          machine->WriteMem(machine->ReadRegister(4),4,valueReturn);
           break;
         }
         #endif // CHANGED
