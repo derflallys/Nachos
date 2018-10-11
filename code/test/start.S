@@ -112,7 +112,7 @@ GetString:
    addiu $2,$0,SC_PutInt
    syscall
    j	$31
-    .end PutInt
+   .end PutInt
 
   .globl Exec
   .ent	Exec
