@@ -100,7 +100,7 @@ GetChar:
 
     .globl GetInt
     .ent	GetInt
-  GetInt:
+GetInt:
    addiu $2,$0,SC_GetInt
    syscall
   j	$31
@@ -116,11 +116,27 @@ GetString:
 
    .globl PutInt
    .ent	PutInt
-  PutInt:
+PutInt:
    addiu $2,$0,SC_PutInt
    syscall
    j	$31
    .end PutInt
+
+   .globl ThreadCreate
+   .ent	ThreadCreate
+ThreadCreate:
+   addiu $2,$0,SC_ThreadCreate
+   syscall
+   j	$31
+   .end ThreadCreate
+
+   .globl ThreadExit
+   .ent	ThreadExit
+ThreadExit:
+   addiu $2,$0,SC_ThreadExit
+   syscall
+   j	$31
+   .end ThreadExit
 
   .globl Exec
   .ent	Exec

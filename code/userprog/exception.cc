@@ -24,6 +24,9 @@
 #include "copyright.h"
 #include "system.h"
 #include "syscall.h"
+#ifdef CHANGED
+#include "userthread.h"
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
@@ -63,7 +66,9 @@ UpdatePC ()
 //      "which" is the kind of exception.  The list of possible exceptions
 //      are in machine.h.
 //----------------------------------------------------------------------
+
 #ifdef CHANGED
+
 int copyStringFromMachine(int from, char* to, unsigned size){
   int tmp;
   unsigned i = 0;
@@ -85,8 +90,6 @@ int copyStringToMachine(int to, char* from, unsigned size) {
     //printf("From Ch : %c \n",from[i] );
 
     if(from[i] == '\0' || from[i] == '\n') {
-      tmp = (int)'\0';
-      machine->WriteMem(to+i,1,tmp);
       break;
     }
     tmp = (int)from[i];
@@ -95,6 +98,7 @@ int copyStringToMachine(int to, char* from, unsigned size) {
   }
   return i;
 }
+
 #endif // CHANGED
 
 
@@ -194,6 +198,20 @@ ExceptionHandler (ExceptionType which)
           int var  = machine->ReadRegister(4);
           int valueReturn = synchconsole->SynchGetInt(&var);
           machine->WriteMem(machine->ReadRegister(4),4,valueReturn);
+          break;
+        }
+        case SC_ThreadCreate:
+        {
+          DEBUG ('s', "ThreadCreate\n");
+          DEBUG('x', "f = %d\n", machine->ReadRegister(4));
+          DEBUG('x', "arg = %d\n", machine->ReadRegister(5));
+          int res =  do_ThreadCreate(machine->ReadRegister(4),machine->ReadRegister(5));
+          break;
+        }
+        case SC_ThreadExit:
+        {
+          DEBUG ('s', "ThreadExit\n");
+          do_ThreadExit();
           break;
         }
         #endif // CHANGED

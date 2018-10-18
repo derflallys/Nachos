@@ -40,6 +40,8 @@
 #define SC_GetString	14
 #define SC_PutInt 15
 #define SC_GetInt 16
+#define SC_ThreadCreate 17
+#define SC_ThreadExit 18
 
 #endif // CHANGED
 
@@ -171,6 +173,16 @@ void PutInt(int n);
 * Read intger from input system
 */
 int GetInt(int *n);
+
+/*
+* Create Thread 
+*/
+int ThreadCreate(void f(void * arg),void * arg);
+
+/*
+* Exit Thread
+*/
+void ThreadExit(void);
 
 
 #endif // CHANGED
