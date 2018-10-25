@@ -43,8 +43,8 @@ int SynchConsole::SynchGetChar()
 {
   mutexChar->P();
   readAvail->P();
-  return console->GetChar();
   mutexChar->V();
+  return console->GetChar();
 }
 
 void SynchConsole::SynchPutString(const char s[])
@@ -89,7 +89,7 @@ int SynchConsole::SynchGetInt(int *var)
   SynchGetString(s,100);
   sscanf(s,"%d",var);
   free(s);
-  return *var;
   mutexInt->V();
+  return *var;
 }
 #endif // CHANGED
