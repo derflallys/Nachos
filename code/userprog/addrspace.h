@@ -17,7 +17,15 @@
 #include "filesys.h"
 #include "translate.h"
 
+#ifdef CHANGED
+#include "bitmap.h"
+#endif //CHANGED
+
 #define UserStacksAreaSize		1024	// increase this as necessary!
+
+#ifdef CHANGED
+class Semaphore;
+#endif //CHANGED
 
 class AddrSpace:dontcopythis
 {
@@ -33,13 +41,21 @@ class AddrSpace:dontcopythis
     void SaveState ();		// Save/restore address space-specific
     void RestoreState ();	// info on a context switch
     #ifdef CHANGED
-    int  AllocateUserStack();
+    int  AllocateUserStack(int which);
+    BitMap* getBitMap();
+    int getThreadCounter();
+    void incrementThreadCounter();
+    void decrementThreadCounter();
     #endif //CHANGED
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!
     unsigned int numPages;	// Number of pages in the virtual
     // address space
+    #ifdef CHANGED
+    BitMap* bitmap;
+    int threadCounter; 
+    #endif //CHANGED
 };
 
 #endif // ADDRSPACE_H

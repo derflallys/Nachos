@@ -1,10 +1,10 @@
 #include "syscall.h"
 
 void printChar(char c) {
-    int i;
-    for (i = 0; i < 10; i++) {
-        PutChar(c + i);
-    }
+    //int i;
+    //for (i = 0; i < 10; i++) {
+        PutChar(c);
+    //}
     PutChar('\n');
     ThreadExit();
 }
@@ -19,10 +19,11 @@ void printInt(int i){
 }
 
 int main() {
-    int i;
-    for(i=0; i < 10; i++) {
-        ThreadCreate(printChar, 'a');
-    }
+    volatile int i;
+    ThreadCreate(printChar, 'a');
+    ThreadCreate(printChar, 'b');
+    ThreadCreate(printChar, 'c');
+
     //ThreadCreate(printString, "azertyuiop");
     //ThreadCreate(printInt, 98765);
 

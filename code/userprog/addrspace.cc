@@ -122,6 +122,10 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	   size - UserStacksAreaSize, UserStacksAreaSize);
 
     pageTable[0].valid = FALSE;			// Catch NULL dereference
+    #ifdef CHANGED
+    bitmap = new BitMap(3);
+    threadCounter = 1; 
+    #endif //CHANGED
 }
 
 //----------------------------------------------------------------------
@@ -135,6 +139,9 @@ AddrSpace::~AddrSpace ()
   // delete pageTable;
   delete [] pageTable;
   // End of modification
+  #ifdef CHANGED
+  delete bitmap; 
+  #endif //CHANGED
 }
 
 //----------------------------------------------------------------------
@@ -199,8 +206,25 @@ AddrSpace::RestoreState ()
 }
 
 #ifdef CHANGED
-int  AddrSpace::AllocateUserStack()
+int  AddrSpace::AllocateUserStack(int which)
 {
-  return (numPages*PageSize)-256-16;
+    bitmap->Mark(which);
+    return (numPages*PageSize)-16 + (which * -256);
+}
+
+BitMap* AddrSpace::getBitMap() {
+    return bitmap;
+}
+
+int AddrSpace::getThreadCounter() {
+    return threadCounter;
+}
+
+void AddrSpace::incrementThreadCounter() {
+    threadCounter++;
+}
+
+void AddrSpace::decrementThreadCounter() {
+    threadCounter--;
 }
 #endif //CHANGED

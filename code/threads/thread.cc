@@ -413,6 +413,15 @@ Thread::RestoreUserState ()
     for (int i = 0; i < NumTotalRegs; i++)
 	machine->WriteRegister (i, userRegisters[i]);
 }
+
+#ifdef CHANGED
+void Thread::setSlot(int s) {
+    slot = s;
+}
+
+int Thread::getSlot() {
+    return slot;
+}
+#endif // CHANGED
+
 #endif
-
-

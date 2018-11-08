@@ -82,6 +82,10 @@ class Thread:dontcopythis
     unsigned long *stackTop;		// the current stack pointer
     unsigned long machineState[MachineStateSize];	// all registers except for stackTop
 
+    #ifdef CHANGED
+    int slot;
+    #endif // CHANGED
+
   public:
       Thread (const char *debugName);	// initialize a Thread 
      ~Thread ();		// deallocate a Thread
@@ -112,6 +116,11 @@ class Thread:dontcopythis
     {
 	printf ("%s, ", name);
     }
+
+    #ifdef CHANGED
+    void setSlot(int s);
+    int getSlot();
+    #endif // CHANGED
 
   private:
     // some of the private data for this class is listed above

@@ -4,8 +4,9 @@
 #include "thread.h"
 #include "userthread.h"
 #include "addrspace.h"
+#include "synch.h"
+static Semaphore* mutex = new Semaphore("mutexThread", 1);
 
-static int cpt_threads = 1;
 static void StartUserThread(void *schmurtz) {
   int i;
  
@@ -26,35 +27,52 @@ static void StartUserThread(void *schmurtz) {
     // Set the stack register to the end of the address space, where we
     // allocated the stack; but subtract off a bit, to make sure we don't
     // accidentally reference off the end!
-    machine->WriteRegister (StackReg,currentThread->space->AllocateUserStack());
+    machine->WriteRegister (StackReg,currentThread->space->AllocateUserStack(((struct Schmurtz*)schmurtz)->which));
     DEBUG ('a', "Initializing stack register to 0x%x\n",
-	   currentThread->space->AllocateUserStack());
+	   currentThread->space->AllocateUserStack(((struct Schmurtz*)schmurtz)->which));
     DEBUG ('x', "StackReg :  %d\n",StackReg);
 
     machine->Run();
+    free(schmurtz);
 }
 
 int do_ThreadCreate(int f,int arg) {
   DEBUG ('x', "f value : %d\n", f);
   DEBUG ('x', "arg value : %d\n", arg);
 
-  Thread *newThread = new Thread("newThread");
-  struct Schmurtz *schmurtz =(Schmurtz*) malloc(sizeof(Schmurtz*));
-  schmurtz->f = f;
-  schmurtz->arg = arg;
- 
-  newThread->Start(StartUserThread,schmurtz);
-  cpt_threads++;
+  int slot = currentThread->space->getBitMap()->Find();
+  if(currentThread->space->getThreadCounter() == 1) {
+    currentThread->setSlot(0);
+  }
+
+  if(slot != -1) {
+    Thread *newThread = new Thread("newThread");
+    newThread->setSlot(slot);
+    struct Schmurtz *schmurtz =(Schmurtz*) malloc(sizeof(Schmurtz*));
+    schmurtz->f = f;
+    schmurtz->arg = arg;
+    schmurtz->which = slot;
+    newThread->Start(StartUserThread,schmurtz);
+    mutex->P();
+    currentThread->space->incrementThreadCounter();
+    mutex->V();
+  }
+  else {
+    return -1;
+  }
   return 0;
 }
 
 void do_ThreadExit() {
-  if(cpt_threads > 1) {
-    cpt_threads--;
-    currentThread->Finish();
-  } else {
+  mutex->P();
+  currentThread->space->decrementThreadCounter();
+  if(currentThread->space->getThreadCounter() <= 0) {
     interrupt->Halt();
   }
+  mutex->V();
+  int slot = currentThread->getSlot();
+  currentThread->space->getBitMap()->Clear(slot);
+  currentThread->Finish();  
 }
 
 #endif // CHANGED
