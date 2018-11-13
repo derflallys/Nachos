@@ -24,6 +24,7 @@
 #define UserStacksAreaSize		1024	// increase this as necessary!
 
 #ifdef CHANGED
+#define THREAD_SIZE           256
 class Semaphore;
 #endif //CHANGED
 
@@ -41,8 +42,9 @@ class AddrSpace:dontcopythis
     void SaveState ();		// Save/restore address space-specific
     void RestoreState ();	// info on a context switch
     #ifdef CHANGED
-    int  AllocateUserStack(int which);
-    BitMap* getBitMap();
+    int  AllocateUserStack(int slot);
+    void ClearBitmap();
+    int findAvailableSlot();
     int getThreadCounter();
     void incrementThreadCounter();
     void decrementThreadCounter();
@@ -52,9 +54,11 @@ class AddrSpace:dontcopythis
     // for now!
     unsigned int numPages;	// Number of pages in the virtual
     // address space
+    
     #ifdef CHANGED
     BitMap* bitmap;
-    int threadCounter; 
+    int threadCounter;
+    Semaphore* mutex;
     #endif //CHANGED
 };
 

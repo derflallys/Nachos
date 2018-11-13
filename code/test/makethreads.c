@@ -20,9 +20,9 @@ void printInt(int i){
 
 int main() {
     volatile int i;
-    ThreadCreate(printChar, 'a');
-    ThreadCreate(printChar, 'b');
-    ThreadCreate(printChar, 'c');
+    for(i=0; i<9; i++) {
+            ThreadCreate(printChar, 'a'+i);
+    }
 
     //ThreadCreate(printString, "azertyuiop");
     //ThreadCreate(printInt, 98765);

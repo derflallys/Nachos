@@ -5,7 +5,6 @@
 #include "userthread.h"
 #include "addrspace.h"
 #include "synch.h"
-static Semaphore* mutex = new Semaphore("mutexThread", 1);
 
 static void StartUserThread(void *schmurtz) {
   int i;
@@ -40,10 +39,7 @@ int do_ThreadCreate(int f,int arg) {
   DEBUG ('x', "f value : %d\n", f);
   DEBUG ('x', "arg value : %d\n", arg);
 
-  int slot = currentThread->space->getBitMap()->Find();
-  if(currentThread->space->getThreadCounter() == 1) {
-    currentThread->setSlot(0);
-  }
+  int slot = currentThread->space->findAvailableSlot();
 
   if(slot != -1) {
     Thread *newThread = new Thread("newThread");
@@ -53,9 +49,7 @@ int do_ThreadCreate(int f,int arg) {
     schmurtz->arg = arg;
     schmurtz->which = slot;
     newThread->Start(StartUserThread,schmurtz);
-    mutex->P();
     currentThread->space->incrementThreadCounter();
-    mutex->V();
   }
   else {
     return -1;
@@ -64,14 +58,15 @@ int do_ThreadCreate(int f,int arg) {
 }
 
 void do_ThreadExit() {
-  mutex->P();
+  int slot = currentThread->getSlot();
+  if(slot != -1) {
+    currentThread->space->ClearBitmap();
+  }
   currentThread->space->decrementThreadCounter();
   if(currentThread->space->getThreadCounter() <= 0) {
     interrupt->Halt();
   }
-  mutex->V();
-  int slot = currentThread->getSlot();
-  currentThread->space->getBitMap()->Clear(slot);
+  
   currentThread->Finish();  
 }
 

@@ -21,6 +21,7 @@
 #include "noff.h"
 #include "syscall.h"
 #include "new"
+#include "synch.h"
 
 //----------------------------------------------------------------------
 // SwapHeader
@@ -62,6 +63,12 @@ SwapHeader (NoffHeader * noffH)
 
 AddrSpace::AddrSpace (OpenFile * executable)
 {
+    #ifdef CHANGED
+    bitmap = new BitMap(UserStacksAreaSize/THREAD_SIZE);
+    mutex = new Semaphore("mutexThread", 1);
+    threadCounter = 1; 
+    #endif //CHANGED
+
     NoffHeader noffH;
     unsigned int i, size;
 
@@ -122,10 +129,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	   size - UserStacksAreaSize, UserStacksAreaSize);
 
     pageTable[0].valid = FALSE;			// Catch NULL dereference
-    #ifdef CHANGED
-    bitmap = new BitMap(3);
-    threadCounter = 1; 
-    #endif //CHANGED
 }
 
 //----------------------------------------------------------------------
@@ -206,14 +209,18 @@ AddrSpace::RestoreState ()
 }
 
 #ifdef CHANGED
-int  AddrSpace::AllocateUserStack(int which)
+int  AddrSpace::AllocateUserStack(int slot)
 {
-    bitmap->Mark(which);
-    return (numPages*PageSize)-16 + (which * -256);
+    bitmap->Mark(slot);
+    return (numPages*PageSize)-16 + (slot * -256);
 }
 
-BitMap* AddrSpace::getBitMap() {
-    return bitmap;
+int AddrSpace::findAvailableSlot() {
+    return bitmap->Find();
+}
+
+void AddrSpace::ClearBitmap() {
+    return bitmap->Clear(currentThread->getSlot());
 }
 
 int AddrSpace::getThreadCounter() {
@@ -221,10 +228,14 @@ int AddrSpace::getThreadCounter() {
 }
 
 void AddrSpace::incrementThreadCounter() {
+      mutex->P();
     threadCounter++;
+      mutex->V();
 }
 
 void AddrSpace::decrementThreadCounter() {
+      mutex->P();
     threadCounter--;
+      mutex->V();
 }
 #endif //CHANGED
