@@ -34,7 +34,7 @@
 __start:
 	jal	main
 	move	$4,$2
-	jal	Exit	 /* if we return from main, exit(0) */
+	jal		ThreadExit	 /* if we return from main, exit(0) */
 	.end __start
 
 /* -------------------------------------------------------------
@@ -126,6 +126,7 @@ PutInt:
    .ent	ThreadCreate
 ThreadCreate:
    addiu $2,$0,SC_ThreadCreate
+   la  $6, ThreadExit
    syscall
    j	$31
    .end ThreadCreate

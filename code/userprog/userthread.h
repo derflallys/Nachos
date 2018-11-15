@@ -5,10 +5,11 @@
   int f;
   int arg;
   int which;
+  int returnVal;
 };
 
-extern int do_ThreadCreate(int f, int arg);
-extern void do_ThreadExit(int addr);
+extern int do_ThreadCreate(int f, int arg, int returnVal);
+extern void do_ThreadExit();
 
 #endif //USERTHREAD_H
 #endif //CHANGED

@@ -23,6 +23,10 @@ static void StartUserThread(void *schmurtz) {
     machine->WriteRegister (NextPCReg, machine->ReadRegister(PCReg) + 4);
     DEBUG ('x', "NextPCReg :  %d\n",NextPCReg);
 
+    machine->WriteRegister (RetAddrReg, ((struct Schmurtz*)schmurtz)->returnVal);
+    DEBUG ('x', "RetAddrReg :  %d\n",RetAddrReg);
+    DEBUG ('x', "RETURN VALUE :  %d\n",((struct Schmurtz*)schmurtz)->returnVal);
+
     // Set the stack register to the end of the address space, where we
     // allocated the stack; but subtract off a bit, to make sure we don't
     // accidentally reference off the end!
@@ -35,10 +39,7 @@ static void StartUserThread(void *schmurtz) {
     free(schmurtz);
 }
 
-int do_ThreadCreate(int f,int arg) {
-  DEBUG ('x', "f value : %d\n", f);
-  DEBUG ('x', "arg value : %d\n", arg);
-
+int do_ThreadCreate(int f,int arg, int returnVal) {
   int slot = currentThread->space->findAvailableSlot();
 
   if(slot != -1) {
@@ -48,6 +49,7 @@ int do_ThreadCreate(int f,int arg) {
     schmurtz->f = f;
     schmurtz->arg = arg;
     schmurtz->which = slot;
+    schmurtz->returnVal = returnVal;
     newThread->Start(StartUserThread,schmurtz);
     currentThread->space->incrementThreadCounter();
   }
@@ -57,10 +59,8 @@ int do_ThreadCreate(int f,int arg) {
   return 0;
 }
 
-void do_ThreadExit(int addr) {
-  int slot = currentThread->getSlot();
+void do_ThreadExit() {
   currentThread->space->ClearBitmap();
-
   currentThread->space->decrementThreadCounter();
   if(currentThread->space->getThreadCounter() <= 0) {
     interrupt->Halt();
