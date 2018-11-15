@@ -205,14 +205,15 @@ ExceptionHandler (ExceptionType which)
           DEBUG ('s', "ThreadCreate\n");
           int res = do_ThreadCreate(machine->ReadRegister(4),machine->ReadRegister(5));
           if(res == -1) {
-              printf("Stack overflow\n");
+              printf("\nStack overflow\n");
           }
           break;
         }
         case SC_ThreadExit:
         {
           DEBUG ('s', "ThreadExit\n");
-          do_ThreadExit();
+          DEBUG('s', "\n resgiste 4 : %d \n",machine->ReadRegister(4));
+          do_ThreadExit(machine->ReadRegister(4));
           break;
         }
         #endif // CHANGED

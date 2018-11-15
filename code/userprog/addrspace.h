@@ -46,6 +46,7 @@ class AddrSpace:dontcopythis
     void ClearBitmap();
     int findAvailableSlot();
     int getThreadCounter();
+    BitMap* getBitMap();
     void incrementThreadCounter();
     void decrementThreadCounter();
     #endif //CHANGED

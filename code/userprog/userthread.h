@@ -8,7 +8,7 @@
 };
 
 extern int do_ThreadCreate(int f, int arg);
-extern void do_ThreadExit();
+extern void do_ThreadExit(int addr);
 
 #endif //USERTHREAD_H
 #endif //CHANGED

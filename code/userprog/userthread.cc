@@ -57,11 +57,10 @@ int do_ThreadCreate(int f,int arg) {
   return 0;
 }
 
-void do_ThreadExit() {
+void do_ThreadExit(int addr) {
   int slot = currentThread->getSlot();
-  if(slot != -1) {
-    currentThread->space->ClearBitmap();
-  }
+  currentThread->space->ClearBitmap();
+
   currentThread->space->decrementThreadCounter();
   if(currentThread->space->getThreadCounter() <= 0) {
     interrupt->Halt();

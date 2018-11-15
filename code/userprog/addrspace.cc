@@ -65,6 +65,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     #ifdef CHANGED
     bitmap = new BitMap(UserStacksAreaSize/THREAD_SIZE);
+    bitmap->Mark(0);
+    currentThread->setSlot(0);
     mutex = new Semaphore("mutexThread", 1);
     threadCounter = 1; 
     #endif //CHANGED
@@ -223,19 +225,23 @@ void AddrSpace::ClearBitmap() {
     return bitmap->Clear(currentThread->getSlot());
 }
 
+BitMap* AddrSpace::getBitMap() {
+    return bitmap;
+}
+
 int AddrSpace::getThreadCounter() {
     return threadCounter;
 }
 
 void AddrSpace::incrementThreadCounter() {
-      mutex->P();
+    mutex->P();
     threadCounter++;
-      mutex->V();
+    mutex->V();
 }
 
 void AddrSpace::decrementThreadCounter() {
-      mutex->P();
+    mutex->P();
     threadCounter--;
-      mutex->V();
+    mutex->V();
 }
 #endif //CHANGED
