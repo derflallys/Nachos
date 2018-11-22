@@ -18,7 +18,7 @@
 #include "translate.h"
 
 #ifdef CHANGED
-#include "bitmap.h"
+#include "pageprovider.h"
 #endif //CHANGED
 
 #define UserStacksAreaSize		1024	// increase this as necessary!
@@ -60,6 +60,7 @@ class AddrSpace:dontcopythis
     BitMap* bitmap;
     int threadCounter;
     Semaphore* mutex;
+    PageProvider * pageProvider;
     #endif //CHANGED
 };
 

@@ -23,6 +23,31 @@
 #include "new"
 #include "synch.h"
 
+#ifdef CHANGED
+static void ReadAtVirtual(OpenFile*executable, int virtualaddr, int numBytes, 
+int position, TranslationEntry *pageTable, unsigned numPages) {
+    TranslationEntry *oldPageTable = machine->pageTable;
+    unsigned oldPageTableSize = machine->pageTableSize;
+
+    machine->pageTable = pageTable;
+    machine->pageTableSize = numPages;        
+
+    char* buff = new char[numBytes];
+    int r = executable->ReadAt(buff, numBytes, position);
+    
+    if (r == -1) {
+        DEBUG ('a', " Erreur ReadAt pas de caractere lu \n");
+    }
+
+    for(int i = 0; i < numBytes; i++) {
+        machine->WriteMem(virtualaddr+i, 1, buff[i]);
+    }
+    machine->pageTable = oldPageTable;
+    machine->pageTableSize = oldPageTableSize;
+    delete [] buff;
+}
+#endif // CHANGED
+
 //----------------------------------------------------------------------
 // SwapHeader
 //      Do little endian to big endian conversion on the bytes in the
@@ -63,14 +88,6 @@ SwapHeader (NoffHeader * noffH)
 
 AddrSpace::AddrSpace (OpenFile * executable)
 {
-    #ifdef CHANGED
-    bitmap = new BitMap(UserStacksAreaSize/THREAD_SIZE);
-    bitmap->Mark(0);
-    currentThread->setSlot(0);
-    mutex = new Semaphore("mutexThread", 1);
-    threadCounter = 1; 
-    #endif //CHANGED
-
     NoffHeader noffH;
     unsigned int i, size;
 
@@ -96,36 +113,50 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
     DEBUG ('a', "Initializing address space, num pages %d, total size 0x%x\n",
 	   numPages, size);
+
+    #ifdef CHANGED
+    bitmap = new BitMap(UserStacksAreaSize/THREAD_SIZE);
+    bitmap->Mark(0);
+    currentThread->setSlot(0);
+    mutex = new Semaphore("mutexThread", 1);
+    threadCounter = 1; 
+    pageProvider = new PageProvider(numPages);
+    #endif //CHANGED
+
 // first, set up the translation
     pageTable = new TranslationEntry[numPages];
-    for (i = 0; i < numPages; i++)
-      {
-	  pageTable[i].physicalPage = i;	// for now, phys page # = virtual page #
+    for (i = 0; i < numPages; i++) {
+	  pageTable[i].physicalPage = pageProvider->GetEmptyPage();	// for now, phys page # = virtual page #
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
 	  pageTable[i].readOnly = FALSE;	// if the code segment was entirely on
 	  // a separate page, we could set its
 	  // pages to be read-only
-      }
+    }
 
-// then, copy in the code and data segments into memory
-    if (noffH.code.size > 0)
-      {
-	  DEBUG ('a', "Initializing code segment, at 0x%x, size 0x%x\n",
-		 noffH.code.virtualAddr, noffH.code.size);
-	  executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
-			      noffH.code.size, noffH.code.inFileAddr);
-      }
-    if (noffH.initData.size > 0)
-      {
-	  DEBUG ('a', "Initializing data segment, at 0x%x, size 0x%x\n",
-		 noffH.initData.virtualAddr, noffH.initData.size);
-	  executable->ReadAt (&
-			      (machine->mainMemory
-			       [noffH.initData.virtualAddr]),
-			      noffH.initData.size, noffH.initData.inFileAddr);
-      }
+    // then, copy in the code and data segments into memory
+    if (noffH.code.size > 0) {
+        DEBUG ('a', "Initializing code segment, at 0x%x, size 0x%x\n",
+         noffH.code.virtualAddr, noffH.code.size);
+        #ifdef CHANGED
+        // executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
+        // 	      noffH.code.size, noffH.code.inFileAddr);
+        ReadAtVirtual(executable,noffH.code.virtualAddr,
+            noffH.code.size, noffH.code.inFileAddr, pageTable, numPages);     
+         #endif // CHANGED
+    }
+    if (noffH.initData.size > 0) {
+        DEBUG ('a', "Initializing data segment, at 0x%x, size 0x%x\n",
+                noffH.initData.virtualAddr, noffH.initData.size);
+        
+        #ifdef CHANGED
+        // executable->ReadAt (&(machine->mainMemory[noffH.initData.virtualAddr]),
+        // 	      noffH.initData.size, noffH.initData.inFileAddr);
+        ReadAtVirtual(executable,noffH.initData.virtualAddr,
+            noffH.initData.size, noffH.initData.inFileAddr, pageTable, numPages);
+        #endif // CHANGED
+    }        
 
     DEBUG ('a', "Area for stacks at 0x%x, size 0x%x\n",
 	   size - UserStacksAreaSize, UserStacksAreaSize);
@@ -142,10 +173,15 @@ AddrSpace::~AddrSpace ()
 {
   // LB: Missing [] for delete
   // delete pageTable;
-  delete [] pageTable;
+  
   // End of modification
   #ifdef CHANGED
-  delete bitmap; 
+  delete bitmap;
+  for(int i=0; i<numPages; i++) {
+      pageProvider->ReleasePage(pageTable[i].physicalPage);
+  }
+  delete [] pageTable;
+  delete pageProvider;
   #endif //CHANGED
 }
 
