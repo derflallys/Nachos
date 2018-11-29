@@ -25,7 +25,7 @@ void PageProvider::ReleasePage(int numPage) {
     bitmap->Clear(numPage);
 }
 
-int PageProvider::NumAvailaPage() {
+int PageProvider::NumAvailPage() {
     return bitmap->NumClear();
 }
 

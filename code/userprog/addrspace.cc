@@ -98,7 +98,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     /* Check that this is really a MIPS program */
     ASSERT (noffH.noffMagic == NOFFMAGIC);
 
-// how big is address space?
+    // how big is address space?
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStacksAreaSize;	// we need to increase the size
     // to leave room for the stack
     numPages = divRoundUp (size, PageSize);
@@ -108,22 +108,22 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // to run anything too big --
     // at least until we have
     // virtual memory
-    if (numPages > NumPhysPages)
+    #ifdef CHANGED
+    pageProvider = new PageProvider(numPages);
+
+    if (numPages > pageProvider->NumAvailPage())
 	    throw std::bad_alloc();
 
     DEBUG ('a', "Initializing address space, num pages %d, total size 0x%x\n",
 	   numPages, size);
 
-    #ifdef CHANGED
     bitmap = new BitMap(UserStacksAreaSize/THREAD_SIZE);
     bitmap->Mark(0);
     currentThread->setSlot(0);
     mutex = new Semaphore("mutexThread", 1);
     threadCounter = 1; 
-    pageProvider = new PageProvider(numPages);
-    #endif //CHANGED
 
-// first, set up the translation
+    // first, set up the translation
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) {
 	  pageTable[i].physicalPage = pageProvider->GetEmptyPage();	// for now, phys page # = virtual page #
@@ -134,6 +134,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	  // a separate page, we could set its
 	  // pages to be read-only
     }
+    #endif //CHANGED
 
     // then, copy in the code and data segments into memory
     if (noffH.code.size > 0) {
@@ -177,7 +178,7 @@ AddrSpace::~AddrSpace ()
   // End of modification
   #ifdef CHANGED
   delete bitmap;
-  for(int i=0; i<numPages; i++) {
+  for(unsigned int i=0; i < numPages; i++) {
       pageProvider->ReleasePage(pageTable[i].physicalPage);
   }
   delete [] pageTable;

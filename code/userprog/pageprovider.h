@@ -1,6 +1,7 @@
 #ifdef CHANGED
 #ifndef PAGEPROVIDER_H
 #define PAGEPROVIDER_H
+
 #include "bitmap.h"
 
 class PageProvider {
@@ -13,7 +14,7 @@ class PageProvider {
         ~PageProvider();
         int GetEmptyPage();
         void ReleasePage(int numPage);
-        int NumAvailaPage();
+        int NumAvailPage();
 };
 
 #endif //PAGEPROVIDER_H

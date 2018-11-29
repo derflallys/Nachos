@@ -1,10 +1,12 @@
+#ifdef CHANGED
 #include "syscall.h"
 
-int main()
-{
+int main() {
     
-    //ForkExec("../test/putchar");
+    ForkExec("../test/putchar");
     ForkExec("../test/putchar");
     while(1);
     return 0;
 }
+
+#endif // CHANGED

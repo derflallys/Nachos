@@ -99,12 +99,28 @@ int copyStringToMachine(int to, char* from, unsigned size) {
   return i;
 }
 
-void Fork(void * space)
-{
-   
-   ((AddrSpace*)space)->InitRegisters ();
-   ((AddrSpace*)space)->RestoreState ();
-   machine->Run ();
+void StartFork(void * arg) {
+  currentThread->space->InitRegisters ();
+  currentThread->space->RestoreState ();
+  machine->Run ();
+}
+
+int Fork(const char *filename) {
+  AddrSpace * space;
+  OpenFile *executable = fileSystem->Open(filename);
+
+  if (executable == NULL) {
+    printf ("Unable to open file %s\n", filename);
+    return -1;
+  }
+
+  space = new AddrSpace(executable);
+  currentThread->space = space;
+  delete executable;
+
+  Thread * newthread = new Thread("core");
+  newthread->Start(StartFork,space);
+  return 0;
 }
 
 #endif // CHANGED
@@ -227,25 +243,13 @@ ExceptionHandler (ExceptionType which)
         case SC_ForkExec:
         {
           DEBUG ('s', "ForkExec\n");
-          /*char * filename = (char*)malloc(sizeof(char)*50);
-          synchconsole->SynchGetString(filename, 50);
-          DEBUG ('s', "filename : %s\n",filename);
-          AddrSpace * space;
-          OpenFile *executable = fileSystem->Open(filename);
+          char *to = (char*)malloc(sizeof(char)*MAX_STRING_SIZE);
+	        char* buf =  (char*)malloc(sizeof(char)*MAX_STRING_SIZE);	
+	        int from = machine->ReadRegister(4);
+	      
+	        copyStringFromMachine(from, to, MAX_STRING_SIZE);
 
-          if (executable == NULL)
-          {
-            printf ("Unable to open file %s\n", filename);
-            return;
-          }
-
-          space = new AddrSpace(executable);
-          currentThread->space = space;
-          delete executable;
-
-          Thread * newthread = new Thread("core");
-          newthread->Start(Fork,space);*/
-
+          Fork(to);  
           break;
         }
         #endif // CHANGED
