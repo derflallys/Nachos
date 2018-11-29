@@ -109,7 +109,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // at least until we have
     // virtual memory
     #ifdef CHANGED
-    if (numPages > pageProvider->NumAvailPage())
+    if (numPages > pageprovider->NumAvailPage())
 	    throw std::bad_alloc();
 
     DEBUG ('a', "Initializing address space, num pages %d, total size 0x%x\n",
@@ -124,7 +124,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // first, set up the translation
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) {
-	  pageTable[i].physicalPage = pageProvider->GetEmptyPage();	// for now, phys page # = virtual page #
+	  pageTable[i].physicalPage = pageprovider->GetEmptyPage();	// for now, phys page # = virtual page #
 	  pageTable[i].valid = TRUE;
 	  pageTable[i].use = FALSE;
 	  pageTable[i].dirty = FALSE;
@@ -177,10 +177,9 @@ AddrSpace::~AddrSpace ()
   #ifdef CHANGED
   delete bitmap;
   for(unsigned int i=0; i < numPages; i++) {
-      pageProvider->ReleasePage(pageTable[i].physicalPage);
+      pageprovider->ReleasePage(pageTable[i].physicalPage);
   }
   delete [] pageTable;
-  delete pageProvider;
   #endif //CHANGED
 }
 
