@@ -8,7 +8,6 @@ class PageProvider {
     private:
         BitMap* bitmap;
         static PageProvider* instance ;
-        int numPagesProvider;
         PageProvider(int numPage);
 
     public:
