@@ -15,7 +15,7 @@ void printInt(int i){
 int main() {
     volatile int i;
     for(i=0; i<9; i++) {
-       //     ThreadCreate(printChar, 'a'+i);
+        ThreadCreate(printChar, 'a'+i);
     }
 
     ThreadCreate(printString, "azertyuiop");
