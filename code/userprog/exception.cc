@@ -227,7 +227,7 @@ ExceptionHandler (ExceptionType which)
         case SC_ForkExec:
         {
           DEBUG ('s', "ForkExec\n");
-          char* filename;
+          /*char * filename = (char*)malloc(sizeof(char)*50);
           synchconsole->SynchGetString(filename, 50);
           DEBUG ('s', "filename : %s\n",filename);
           AddrSpace * space;
@@ -244,7 +244,7 @@ ExceptionHandler (ExceptionType which)
           delete executable;
 
           Thread * newthread = new Thread("core");
-          newthread->Start(Fork,space);
+          newthread->Start(Fork,space);*/
 
           break;
         }
