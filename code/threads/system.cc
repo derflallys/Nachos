@@ -35,6 +35,7 @@ SynchDisk *synchDisk;
 Machine *machine;		// user program memory and registers
 #ifdef CHANGED
 SynchConsole* synchconsole;
+PageProvider* pageprovider;
 #endif
 #endif
 
@@ -181,6 +182,9 @@ Initialize (int argc, char **argv)
 
   #ifdef USER_PROGRAM
   machine = new Machine (debugUserProg);	// this must come first
+  #ifdef CHANGED
+  pageprovider = PageProvider::GetInstance(NumPhysPages) ;
+  #endif // CHANGED
   #endif
 
   #ifdef FILESYS
@@ -219,7 +223,8 @@ Cleanup ()
   machine = NULL;
   #ifdef CHANGED
   delete synchconsole;
-  synchconsole = NULL ;
+  synchconsole = NULL;
+  pageprovider = NULL;
   #endif
   #endif
 

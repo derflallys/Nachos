@@ -109,8 +109,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // at least until we have
     // virtual memory
     #ifdef CHANGED
-    pageProvider = new PageProvider(numPages);
-
     if (numPages > pageProvider->NumAvailPage())
 	    throw std::bad_alloc();
 

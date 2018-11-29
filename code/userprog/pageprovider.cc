@@ -3,6 +3,13 @@
 #include "system.h"
 #include "pageprovider.h"
 
+PageProvider* PageProvider::instance = 0; //Aucune instance à la base
+
+PageProvider* PageProvider::GetInstance(int numPages){
+  if(instance == 0) //Unicité de l'instance
+    instance = new PageProvider(numPages);
+  return instance;
+}
 
 PageProvider::PageProvider(int numPage) {
     bitmap = new BitMap(numPage);
@@ -13,12 +20,13 @@ PageProvider::~PageProvider() {
 }
 
 int PageProvider::GetEmptyPage() {
-   int slot = bitmap->Find();
-   if(slot != -1) {
-       bitmap->Mark(slot);
-       memset(&slot,0,4);
-   }
-   return slot;
+    int slot = bitmap->Find();
+    if(slot != -1) {
+        bitmap->Mark(slot);
+        //memset(&(machine->mainMemory[slot* PageSize]), 0, PageSize);
+        memset(&slot,0,4);
+    }
+    return slot;
 }
 
 void PageProvider::ReleasePage(int numPage) {

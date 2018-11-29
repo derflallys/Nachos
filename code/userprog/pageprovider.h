@@ -7,10 +7,12 @@
 class PageProvider {
     private:
         BitMap* bitmap;
-
+        static PageProvider* instance ;
+        int numPagesProvider;
+        PageProvider(int numPage);
 
     public:
-        PageProvider(int numPage);
+        static PageProvider *GetInstance(int numPages);
         ~PageProvider();
         int GetEmptyPage();
         void ReleasePage(int numPage);
