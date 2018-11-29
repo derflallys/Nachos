@@ -38,7 +38,7 @@ extern Timer *timer;		// the hardware alarm clock
 #include "pageprovider.h"
 extern PageProvider *pageprovider;
 extern SynchConsole *synchconsole;	// user program memory and registers
-const unsigned int MAX_STRING_SIZE = 10;
+const unsigned int MAX_STRING_SIZE = 25;
 #endif // CHANGED
 
 #include "machine.h"
