@@ -1,6 +1,6 @@
 #ifdef CHANGED
 #ifndef PAGEPROVIDER_H
-
+#define PAGEPROVIDER_H
 #include "bitmap.h"
 
 class PageProvider {

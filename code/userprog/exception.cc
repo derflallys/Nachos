@@ -99,6 +99,14 @@ int copyStringToMachine(int to, char* from, unsigned size) {
   return i;
 }
 
+void Fork(void * space)
+{
+   
+   ((AddrSpace*)space)->InitRegisters ();
+   ((AddrSpace*)space)->RestoreState ();
+   machine->Run ();
+}
+
 #endif // CHANGED
 
 
@@ -214,6 +222,30 @@ ExceptionHandler (ExceptionType which)
         {
           DEBUG ('s', "ThreadExit\n");
           do_ThreadExit();
+          break;
+        }
+        case SC_ForkExec:
+        {
+          DEBUG ('s', "ForkExec\n");
+          char* filename;
+          synchconsole->SynchGetString(filename, 50);
+          DEBUG ('s', "filename : %s\n",filename);
+          AddrSpace * space;
+          OpenFile *executable = fileSystem->Open(filename);
+
+          if (executable == NULL)
+          {
+            printf ("Unable to open file %s\n", filename);
+            return;
+          }
+
+          space = new AddrSpace(executable);
+          currentThread->space = space;
+          delete executable;
+
+          Thread * newthread = new Thread("core");
+          newthread->Start(Fork,space);
+
           break;
         }
         #endif // CHANGED

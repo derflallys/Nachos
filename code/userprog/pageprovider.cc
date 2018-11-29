@@ -5,7 +5,7 @@
 
 
 PageProvider::PageProvider(int numPage) {
-    bitmap = new Bitmap(numPage);
+    bitmap = new BitMap(numPage);
 }
 
 PageProvider::~PageProvider() {
@@ -16,7 +16,7 @@ int PageProvider::GetEmptyPage() {
    int slot = bitmap->Find();
    if(slot != -1) {
        bitmap->Mark(slot);
-       memset(slot,0,4);
+       memset(&slot,0,4);
    }
    return slot;
 }
