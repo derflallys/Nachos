@@ -26,6 +26,7 @@
 #include "syscall.h"
 #ifdef CHANGED
 #include "userthread.h"
+#include "userfork.h"
 #endif //CHANGED
 
 //----------------------------------------------------------------------
@@ -98,31 +99,6 @@ int copyStringToMachine(int to, char* from, unsigned size) {
   }
   return i;
 }
-
-void StartFork(void * arg) {
-  currentThread->space->InitRegisters ();
-  currentThread->space->RestoreState ();
-  machine->Run ();
-}
-
-int Fork(const char *filename) {
-  AddrSpace * space;
-  OpenFile *executable = fileSystem->Open(filename);
-
-  if (executable == NULL) {
-    printf ("Unable to open file %s\n", filename);
-    return -1;
-  }
-
-  space = new AddrSpace(executable);
-  currentThread->space = space;
-  delete executable;
-
-  Thread * newthread = new Thread("core");
-  newthread->Start(StartFork,space);
-  return 0;
-}
-
 #endif // CHANGED
 
 
@@ -140,7 +116,8 @@ ExceptionHandler (ExceptionType which)
         case SC_Halt:
         {
           DEBUG ('s', "Shutdown, initiated by user program.\n");
-          interrupt->Halt ();
+          ExitFork();
+          //interrupt->Halt ();
           break;
         }
         #ifdef CHANGED
@@ -149,7 +126,7 @@ ExceptionHandler (ExceptionType which)
           DEBUG ('s', "Exit\n");
           int r = machine->ReadRegister (4);
           printf("\nExit value return  %d \n",r );
-          interrupt->Halt ();
+          ExitFork();
           break;
         }
         case SC_PutChar:

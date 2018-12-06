@@ -36,6 +36,7 @@ Machine *machine;		// user program memory and registers
 #ifdef CHANGED
 SynchConsole* synchconsole;
 PageProvider* pageprovider;
+int forkCounter; 
 #endif
 #endif
 
@@ -183,6 +184,7 @@ Initialize (int argc, char **argv)
   #ifdef USER_PROGRAM
   machine = new Machine (debugUserProg);	// this must come first
   #ifdef CHANGED
+  forkCounter = 1; 
   pageprovider = PageProvider::GetInstance(NumPhysPages) ;
   #endif // CHANGED
   #endif
@@ -225,6 +227,7 @@ Cleanup ()
   delete synchconsole;
   synchconsole = NULL;
   pageprovider = NULL;
+  forkCounter = 0;
   #endif
   #endif
 

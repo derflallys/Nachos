@@ -62,10 +62,11 @@ int do_ThreadCreate(int f,int arg, int returnVal) {
 void do_ThreadExit() {
   currentThread->space->ClearBitmap();
   currentThread->space->decrementThreadCounter();
-  if(currentThread->space->getThreadCounter() <= 0) {
+  if(currentThread->space->getThreadCounter() <= 0 && forkCounter == 0) {
+    DEBUG ('q', "MACHINE HALTING (THREAD_EXIT): %s \n", currentThread->getName());
     interrupt->Halt();
   }
-  
+  DEBUG ('q', "FIN THREAD : %s \n", currentThread->getName());
   currentThread->Finish();  
 }
 

@@ -26,6 +26,7 @@
 #ifdef CHANGED
 #define THREAD_SIZE           256
 class Semaphore;
+
 #endif //CHANGED
 
 class AddrSpace:dontcopythis

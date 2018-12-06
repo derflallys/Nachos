@@ -3,9 +3,14 @@
 
 int main() {
     
-    ForkExec("../test/putchar");
-    ForkExec("../test/putchar");
-    while(1);
+    // ForkExec("../test/putchar");
+    // ForkExec("../test/putchar");
+    // ForkExec("../test/putchar");
+    // ForkExec("../test/putchar");
+
+    ForkExec("../test/userpages0");
+    ForkExec("../test/userpages1");
+
     return 0;
 }
 

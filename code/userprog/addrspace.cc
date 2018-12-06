@@ -90,7 +90,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
-
+    
     executable->ReadAt (&noffH, sizeof (noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
 	(WordToHost (noffH.noffMagic) == NOFFMAGIC))
@@ -110,7 +110,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
     // virtual memory
     #ifdef CHANGED
     if (numPages > pageprovider->NumAvailPage())
-	    throw std::bad_alloc();
+	    throw int(84);
 
     DEBUG ('a', "Initializing address space, num pages %d, total size 0x%x\n",
 	   numPages, size);
@@ -270,12 +270,14 @@ int AddrSpace::getThreadCounter() {
 void AddrSpace::incrementThreadCounter() {
     mutex->P();
     threadCounter++;
+    forkCounter++;
     mutex->V();
 }
 
 void AddrSpace::decrementThreadCounter() {
     mutex->P();
     threadCounter--;
+    forkCounter--;
     mutex->V();
 }
 #endif //CHANGED
