@@ -1,7 +1,7 @@
 #ifdef CHANGED
 #include "syscall.h"
-#define THIS "ccc"
-#define THAT "ddd"
+#define THIS "aaa"
+#define THAT "MAIN_DU_FORK_USERPAGES1"
 
 const int N = 10; // Choose it large enough!
 
@@ -19,8 +19,10 @@ void f(void *arg) {
 }
 
 int main() {
-    ThreadCreate(f, THIS);
+    unsigned int i = 0;
+    for(i=0; i<12;i++) {
+       ThreadCreate(f, "m"+i);
+    }
     f(THAT);
-    ThreadExit();
 }
 #endif // CHANGED

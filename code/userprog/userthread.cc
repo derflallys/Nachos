@@ -60,7 +60,9 @@ int do_ThreadCreate(int f,int arg, int returnVal) {
 }
 
 void do_ThreadExit() {
-  currentThread->space->ClearBitmap();
+  if(currentThread->getSlot() != -1) {
+    currentThread->space->ClearBitmap();
+  }
   currentThread->space->decrementThreadCounter();
   if(currentThread->space->getThreadCounter() <= 0 && forkCounter == 0) {
     DEBUG ('q', "MACHINE HALTING (THREAD_EXIT): %s \n", currentThread->getName());

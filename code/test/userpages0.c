@@ -1,7 +1,7 @@
 #ifdef CHANGED
 #include "syscall.h"
 #define THIS "aaa"
-#define THAT "bbb"
+#define THAT "MAIN_USERPAGES0"
 
 const int N = 10; // Choose it large enough!
 
@@ -19,7 +19,11 @@ void f(void *arg) {
 }
 
 int main() {
-    ThreadCreate(f, THIS);
-    f(THAT);
+    //unsigned int i = 0;
+    //for(i=0; i<12;i++) {
+    //   ThreadCreate(f, "a"+0);
+    //}
+PutString("un fork\n");
+    //f(THAT);
 }
 #endif // CHANGED

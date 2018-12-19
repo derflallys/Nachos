@@ -11,6 +11,9 @@ Semaphore*  mutexFork = new Semaphore("mutexFork", 1);
 void StartFork(void * arg) {
   currentThread->space->InitRegisters ();
   currentThread->space->RestoreState ();
+  int slot = currentThread->space->findAvailableSlot();
+  currentThread->space->getBitMap()->Mark(slot);
+  currentThread->setSlot(slot);
   machine->Run ();
 }
 
